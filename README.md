@@ -30,10 +30,7 @@
    - Getting and listing Deployments
    - Name the role `deployment-manager`
 
-4. **Create a ServiceAccount named `app-sa` in the `development` namespace.**
-   - Bind the `pod-reader` ClusterRole to this ServiceAccount using a ClusterRoleBinding
-
-5. **Create a RoleBinding in `staging` namespace that:**
+4. **Create a RoleBinding in `staging` namespace that:**
    - Binds the `edit` ClusterRole to a group `developers`
    - RoleBinding name should be `developers-edit`
 
