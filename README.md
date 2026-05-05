@@ -30,9 +30,15 @@
    - Getting and listing Deployments
    - Name the role `deployment-manager`
 
-4. **Create a RoleBinding in `staging` namespace that:**
-   - Binds the `edit` ClusterRole to a group `developers`
-   - RoleBinding name should be `developers-edit`
+4. **Create a RoleBinding in `staging` namespace that binds the `edit` ClusterRole to a group.**
+   - RoleBinding name: `developers-edit`
+   - Bind to group: `developers`
+   - Create the RoleBinding manifest and apply it
+   - Verify group members can edit resources in `staging` namespace
+
+5. **Create a ServiceAccount named `app-sa` in the `development` namespace.**
+   - Bind the `pod-reader` ClusterRole to this ServiceAccount using a ClusterRoleBinding
+   - RoleBinding name should be `app-sa-pod-reader`
 
 ### Advanced RBAC Scenarios
 
