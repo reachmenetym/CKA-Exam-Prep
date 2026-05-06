@@ -1,0 +1,85 @@
+# Create private key
+#
+# openssl genrsa -out john.key 2048
+#
+# Create CSR for the user 
+#
+# openssl req -new -key john.key -subj '/CN=john' -out john.csr 
+#
+# Create X509 certificate from the csr and sign it with kubernetes CA 
+#
+# sudo openssl x509 -req -in john.csr -CAkey /etc/kubernetes/pki/ca.key -CA /etc/kubernetes/pki/ca.crt -CAcreateserial -days 500 -out john.crt
+#
+# Create credential in the kubeconfig 
+#
+# k config set-credentials john --client-certificate $(pwd)/john.crt --client-key $(pwd)/john.key --embed-certs 
+#
+# Create a context to use the newly created user
+#
+# k config set-context john@k8s-test --cluster k8s-test --user john
+#
+#
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-ns
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: john
+  namespace: app-ns
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: john
+  namespace: app-ns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: john
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: john
+---
+#
+# k config use-context john@k8s-test 
+# 
+# k config set-context john@k8s-test --current --namespace app-ns
+#
+# k auth can-i create pod
+# yes
+#
+# k auth can-i get pods 
+# yes
+#
+# k auth can-i list pods 
+# yes
+#
+# k auth can-i delete pod
+# no
+#
+# k auth can-i get service
+# yes
+#
+# k auth can-i delete service
+# no
